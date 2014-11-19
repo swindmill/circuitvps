@@ -1,0 +1,11 @@
+/proc
+/sys
+/mnt
+/media
+/usbdrive
+/cdrom
+/lost+found
+/vz
+/var/lib/vz
+/usbdrive
+/esata

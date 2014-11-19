@@ -1,0 +1,167 @@
+#!/bin/bash
+
+ZIMBRACTL=/root/stuff/backup/scripts/zimbractl.sh
+ZIMBRAHOST="mail.ampx.net"
+
+HOSTNAME=`hostname -s`
+VZLIST=/usr/sbin/vzlist
+RSYNC="/usr/bin/rsync"
+BACKUPVZ=""
+
+export PYTHONPATH=/usr/local/rdiff-backup/lib64/python2.4/site-packages
+RDIFF=/usr/local/rdiff-backup/bin/rdiff-backup
+
+BASELOGDIR=/root/stuff/backup/logs
+
+set_logdir()
+{
+	LOGDATE=`date +%F.%H-%M-%S`
+
+	LOGDIR="$BASELOGDIR/$HOSTNAME/$LOGDATE"
+
+	if [ ! -d "$LOGDIR" ]
+	then
+        	mkdir -p $LOGDIR
+	fi
+
+	MAINLOG="$LOGDIR/vzbackup.rdiff.log"
+}
+
+set_logdir
+
+echo_do()
+{
+        echo "$@" >> $MAINLOG
+       	"$@" >> $MAINLOG 2>&1
+}
+
+echo_do_check()
+{
+        if "$@" >> $MAINLOG 2>&1
+        then
+                echo command: "$@" >> $MAINLOG
+                echo finished successfully >> $MAINLOG
+        else
+                echo command: "$@" >> $MAINLOG
+                echo was not successful >> $MAINLOG
+                exit 1
+        fi
+}
+
+echo_do_redirect()
+{
+	echo "$@" >> $MAINLOG
+	"$@" &> "$LOGDIR"/"$RUNNINGVZ"_"$LOGEXT"
+}
+	
+
+do_rdiff()
+{
+
+	for RUNNINGVZ in $BACKUPVZ
+        do
+			echo_do_redirect "${NICE[@]}" "$RDIFF" --exclude-if-present .vpsbackupexclude \
+			   -v5 --preserve-numerical-ids ${RDIFFSRC}/"$RUNNINGVZ" ${RDIFFDST}/"$RUNNINGVZ"
+	done			   
+
+
+}
+
+do_rsync()
+{
+
+	for RUNNINGVZ in $BACKUPVZ
+	do
+		echo_do pushd "$RSYNCSRC"/"$RUNNINGVZ"
+		echo_do_redirect "${NICE[@]}" "$RSYNC" -avrhH --stats --numeric-ids --delete "${RSYNCARGS[@]}" . ${RSYNCDST}/"$RUNNINGVZ"
+		echo_do popd
+	done
+}
+
+
+do_mail()
+{
+		
+	OUTFILE="$LOGDIR".tar.bz2
+		
+	tar -C "$LOGDIR" -cf - . | bzip2 -9 > "$OUTFILE"
+
+	mutt -s "$HOSTNAME backup report for $LOGDATE" -a "$OUTFILE" reports@circuitsupport.com < /dev/null
+
+}
+
+if cat /etc/mtab | grep usbdrive > /dev/null
+then
+        echo "usbdrive mounted" >> $MAINLOG
+else
+        echo "usbdrive not mounted" >> $MAINLOG
+        exit 1
+fi
+
+echo_do $ZIMBRACTL stop "$ZIMBRAHOST"
+
+sleep 10
+
+echo_do_check lvcreate -s -nvztemp -L 10G /dev/storage/vz
+
+sleep 10
+
+echo_do $ZIMBRACTL start "$ZIMBRAHOST"
+
+echo_do_check mount -o ro /dev/storage/vztemp /vztemp
+
+if cat /etc/mtab | grep vztemp > /dev/null
+then
+        echo "vztemp mounted" >> $MAINLOG
+else
+        echo "vztemp not mounted" >> $MAINLOG
+        exit 1
+fi
+
+for RUNNINGVZ in `$VZLIST -aH -o veid`
+do
+	BACKUPVZ="$BACKUPVZ $RUNNINGVZ"
+done
+
+
+NICE=(nice -n15 ionice -c3)
+RDIFFSRC="/vztemp/private"
+RDIFFDST="/usbdrive/rdiff-backup/vz/private"
+LOGEXT="usbdrive"
+do_rdiff
+
+echo_do umount /vztemp
+echo_do lvremove -f /dev/storage/vztemp
+
+
+NICE=(nice -n15)
+RSYNCSRC="/usbdrive/rdiff-backup/vz/private"
+if [ "$HOSTNAME" == "node1" ]
+then
+	REMOTEHOST="node2"
+	RSYNCDST="node2::vps"
+	LOGEXT="to_node2"
+elif [ "$HOSTNAME" == "node2" ]
+then
+	REMOTEHOST="node1"
+	RSYNCDST="node1::vps"
+	LOGEXT="to_node1"
+fi
+RSYNCARGS="--whole-file"
+
+if /usr/bin/ssh $REMOTEHOST cat /etc/mtab | grep usbdrive >> $MAINLOG 2>&1
+then
+        echo "usbdrive mounted on" $REMOTEHOST >> $MAINLOG
+	do_rsync
+else
+        echo "usbdrive not mounted on" $REMOTEHOST >> $MAINLOG
+fi
+
+#NICE=(nice -n15)
+#RSYNCSRC="/usbdrive/rdiff-backup/vz/private"
+#RSYNCDST="circuit@home.ampx.net:/home/circuit/vps"
+#RSYNCARGS=(-z --rsync-path="sudo rsync" -e 'ssh -p 2292')
+#LOGEXT="remote"
+#do_rsync
+
+do_mail

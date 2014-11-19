@@ -1,0 +1,122 @@
+tc qdisc del dev eth0 root
+tc qdisc add dev eth0 root handle 1: htb
+tc class add dev eth0 parent 1: classid 1:1 htb rate 50mbit burst 15k quantum 60000
+tc class add dev eth0 parent 1:1 classid 1:10 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:11 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:12 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:13 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:14 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:15 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:16 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:17 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:18 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:19 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:20 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:21 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:20 classid 1:22 htb rate 500kbit ceil 1mbit prio 0
+tc class add dev eth0 parent 1:20 classid 1:23 htb rate 500kbit ceil 1mbit prio 1
+tc class add dev eth0 parent 1:1 classid 1:24 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:25 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:26 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:27 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:28 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:29 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:30 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:31 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:32 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:33 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:34 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:35 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:36 htb rate 1mbit quantum 3000
+tc class add dev eth0 parent 1:1 classid 1:37 htb rate 1mbit quantum 3000
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.101 flowid 1:10
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.102 flowid 1:11
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.103 flowid 1:12
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.104 flowid 1:13
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.105 flowid 1:14
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.106 flowid 1:15
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.107 flowid 1:16
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.108 flowid 1:17
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.109 flowid 1:18
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.110 flowid 1:19
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.111 flowid 1:20
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.112 match ip dport 0x0 0xfc00 flowid 1:22
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.112 match ip sport 0x0 0xfc00 flowid 1:22
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.112 match ip dport 2222 0xffff flowid 1:22
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.112 match ip sport 2222 0xffff flowid 1:22
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.112 flowid 1:23
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.113 flowid 1:24
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.114 flowid 1:25
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.115 flowid 1:26
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.116 flowid 1:27
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.117 flowid 1:28
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.118 flowid 1:29
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.119 flowid 1:30
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.120 flowid 1:31
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.121 flowid 1:32
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.122 flowid 1:33
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.123 flowid 1:34
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.124 flowid 1:35
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.125 flowid 1:36
+tc filter add dev eth0 protocol ip parent 1: prio 1 u32 match ip src 208.64.38.126 flowid 1:37
+tc qdisc del dev venet0 root
+tc qdisc add dev venet0 root handle 1: htb
+tc class add dev venet0 parent 1: classid 1:1 htb rate 50mbit burst 15k quantum 60000
+tc class add dev venet0 parent 1:1 classid 1:10 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:11 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:12 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:13 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:14 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:15 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:16 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:17 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:18 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:19 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:20 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:21 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:20 classid 1:22 htb rate 500kbit ceil 1mbit prio 0
+tc class add dev venet0 parent 1:20 classid 1:23 htb rate 500kbit ceil 1mbit prio 1
+tc class add dev venet0 parent 1:1 classid 1:24 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:25 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:26 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:27 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:28 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:29 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:30 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:31 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:32 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:33 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:34 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:35 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:36 htb rate 1mbit quantum 3000
+tc class add dev venet0 parent 1:1 classid 1:37 htb rate 1mbit quantum 3000
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.101 flowid 1:10
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.102 flowid 1:11
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.103 flowid 1:12
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.104 flowid 1:13
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.105 flowid 1:14
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.106 flowid 1:15
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.107 flowid 1:16
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.108 flowid 1:17
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.109 flowid 1:18
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.110 flowid 1:19
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.111 flowid 1:20
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.112 match ip dport 0x0 0xfc00 flowid 1:22
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.112 match ip sport 0x0 0xfc00 flowid 1:22
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.112 match ip dport 2222 0xffff flowid 1:22
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.112 match ip sport 2222 0xffff flowid 1:22
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.112 flowid 1:23
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.113 flowid 1:24
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.114 flowid 1:25
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.115 flowid 1:26
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.116 flowid 1:27
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.117 flowid 1:28
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.118 flowid 1:29
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.119 flowid 1:30
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.120 flowid 1:31
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.121 flowid 1:32
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.122 flowid 1:33
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.123 flowid 1:34
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.124 flowid 1:35
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.125 flowid 1:36
+tc filter add dev venet0 protocol ip parent 1: prio 1 u32 match ip dst 208.64.38.126 flowid 1:37

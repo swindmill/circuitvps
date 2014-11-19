@@ -1,0 +1,18 @@
+#!/bin/bash
+
+NAME="nirglewin"
+KVMID="117"
+MEM="3072"
+DISK="/dev/drbd117"
+DISKIF="virtio"
+CD="$ISO/7601.17514.101119-1850_x64fre_server_eval_en-us-GRMSXEVAL_EN_DVD.iso"
+BOOT="c"
+MONITOR="$MON/117.mon"
+KVMMAC="DE:AD:BE:EF:30:18"
+TAPMAC="DE:AD:BE:EF:13:42"
+NICMODEL="e1000"
+IFNAME="kvm117"
+IP="208.64.38.117"
+VNC=":12"
+MIGPORT="4458"
+OPTIONS="-fda $ISO/virtio-win-1.1.16.vfd"

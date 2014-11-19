@@ -1,0 +1,23 @@
+#!/bin/bash
+
+VZLIST=/usr/sbin/vzlist
+VZMIGRATE=/usr/sbin/vzmigrate
+SRCHOST=`hostname -s`
+
+if [ "$SRCHOST" == "node1" ]
+then
+	DSTHOST="node2"
+elif [ "$SRCHOST" == "node2" ]
+then
+	DSTHOST="node1"
+else
+	exit 1
+fi
+
+for RUNNINGVZ in `$VZLIST -o veid`
+do
+	if [ "$RUNNINGVZ" != "VEID" ]
+	then
+		$VZMIGRATE -r no --keep-dst --online -v $DSTHOST $RUNNINGVZ 
+	fi
+done

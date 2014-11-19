@@ -1,0 +1,105 @@
+#!/bin/bash
+
+if cat /etc/mtab | grep usbdrive > /dev/null
+then
+	echo "usbdrive mounted"
+else
+	echo "usbdrive not mounted"
+	exit 1
+fi
+
+
+LOGDIR=/root/stuff/backup/logs
+ZIMBRACTL=/root/stuff/backup/scripts/zimbractl.sh
+
+ZIMBRAHOST="mail.ampx.net"
+
+dobackup()
+{
+	for RUNNINGVZ in $BACKUPVZ
+	do
+        	EXCLUDEFILE="/vz/private/$RUNNINGVZ/.vpsbackupexclude"
+        	if [ -e "$EXCLUDEFILE" ]
+        	then
+                	EXCLUDE="--exclude-from=$EXCLUDEFILE"
+        	else
+                	EXCLUDE=""
+        	fi
+        	
+		pushd "$RSYNCSRC"/"$RUNNINGVZ" > /dev/null
+		"${NICE[@]}" "$RSYNC" -avrhH --stats --progress --numeric-ids --delete --delete-excluded $EXCLUDE "${RSYNCARGS[@]}" . ${RSYNCDST}/"$RUNNINGVZ" &> "$LOGDIR"/"$RUNNINGVZ"_"$LOGEXT"
+		popd > /dev/null
+	done
+}
+
+HOSTNAME=`hostname -s`
+VZLIST=/usr/sbin/vzlist
+RSYNC="/usr/bin/rsync"
+BACKUPVZ=""
+
+$ZIMBRACTL stop "$ZIMBRAHOST" &> "$LOGDIR"/zimbra.stop.log
+
+sleep 10
+
+lvcreate -s -nvztemp -L 10G /dev/storage/vz
+
+sleep 10
+
+$ZIMBRACTL start "$ZIMBRAHOST" &> "$LOGDIR"/zimbra.start.log
+
+mount -o ro /dev/storage/vztemp /vztemp
+
+if cat /etc/mtab | grep vztemp > /dev/null
+then
+        echo "vztemp mounted"
+else
+        echo "vztemp not mounted"
+        exit 1
+fi
+
+for RUNNINGVZ in `$VZLIST -H -o veid`
+do
+		BACKUPVZ="$BACKUPVZ $RUNNINGVZ"
+done
+
+
+NICE=(nice -n15 ionice -c3)
+RSYNCSRC="/vztemp/private"
+RSYNCDST="/usbdrive/vzbackup/private"
+RSYNCARGS="--whole-file"
+LOGEXT="usbdrive"
+dobackup
+
+umount /vztemp
+lvremove -f /dev/storage/vztemp
+
+
+NICE=(nice -n15)
+RSYNCSRC="/usbdrive/vzbackup/private"
+if [ "$HOSTNAME" == "node1" ]
+then
+	REMOTEHOST="node2"
+	RSYNCDST="node2::vps"
+	LOGEXT="to_node2"
+elif [ "$HOSTNAME" == "node2" ]
+then
+	REMOTEHOST="node1"
+	RSYNCDST="node1::vps"
+	LOGEXT="to_node1"
+fi
+RSYNCARGS="--whole-file"
+
+if /usr/bin/ssh $REMOTEHOST cat /etc/mtab | grep usbdrive > /dev/null
+then
+        echo "usbdrive mounted on" $REMOTEHOST
+	dobackup
+else
+        echo "usbdrive not mounted on" $REMOTEHOST
+fi
+
+NICE=(nice -n15)
+RSYNCSRC="/usbdrive/vzbackup/private"
+RSYNCDST="circuit@home.ampx.net:/home/circuit/vps/"
+RSYNCARGS=(-z --rsync-path="sudo rsync" -e 'ssh -p 2292')
+LOGEXT="remote"
+dobackup

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+VZLIST=/usr/sbin/vzlist
+VZCTL=/usr/sbin/vzctl
+
+while read RUNNINGVZ
+do
+        if [ "$RUNNINGVZ" != "VEID" ]
+        then
+        	$VZCTL stop $RUNNINGVZ
+        fi
+done < <($VZLIST -o veid)
